@@ -9,7 +9,12 @@ def compute_trend_score(rank_velocity: float, price_momentum: float, review_grow
     rank_score = max(0, min(40, (1 - tanh(rank_velocity / 100)) * 40))
     price_score = max(0, min(30, price_momentum))
     review_score = max(0, min(30, review_growth))
-    total = round(rank_score + price_score + review_score, 1)
+
+    rank_score = max(0, min(40, rank_score))
+    price_score = max(0, min(30, price_score))
+    review_score = max(0, min(30, review_score))
+
+    total = round(min(100, rank_score + price_score + review_score), 1)
 
     if total >= 80:
         label = "Hot"
