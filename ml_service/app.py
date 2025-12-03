@@ -5,9 +5,9 @@ app = Flask(__name__)
 
 
 def compute_trend_score(rank_velocity: float, price_momentum: float, review_growth: float) -> dict:
-    rank_score = (1 - tanh(rank_velocity / 100)) * 40
+    rank_score = max(0, min(40, (1 - tanh(rank_velocity / 100)) * 40))
     price_score = max(0, min(30, price_momentum))
-    review_score = min(30, max(0, review_growth))
+    review_score = max(0, min(30, review_growth))
     total = round(rank_score + price_score + review_score, 1)
 
     if total >= 80:
