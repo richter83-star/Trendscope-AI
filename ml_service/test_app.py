@@ -91,3 +91,26 @@ def test_trend_score_invalid_json_returns_400(client):
     assert response.status_code == 400
     data = response.get_json()
     assert "Invalid JSON payload" in data["errors"]
+
+
+def test_trend_score_rejects_boolean_fields(client):
+    response = client.post(
+        "/trend-score",
+        json={"rank_velocity": True, "price_momentum": 5, "review_growth": 10},
+    )
+
+    assert response.status_code == 400
+    data = response.get_json()
+    assert data["errors"] == ["Field 'rank_velocity' must be numeric"]
+
+
+def test_trend_score_malformed_json_returns_400(client):
+    response = client.post(
+        "/trend-score",
+        data="{rank_velocity: 1, price_momentum: 2, review_growth: 3",
+        content_type="application/json",
+    )
+
+    assert response.status_code == 400
+    data = response.get_json()
+    assert data["errors"] == ["Invalid JSON payload"]

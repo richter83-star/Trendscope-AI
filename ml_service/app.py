@@ -43,6 +43,9 @@ def trend_score():
     except BadRequest:
         return jsonify({"errors": ["Invalid JSON payload"]}), 400
 
+    if payload is None:
+        return jsonify({"errors": ["Request body must be a JSON object"]}), 400
+
     if not isinstance(payload, dict):
         return jsonify({"errors": ["Request body must be a JSON object"]}), 400
 
@@ -55,8 +58,14 @@ def trend_score():
             errors.append(f"Missing required field '{field}'")
             continue
 
+        value = payload[field]
+
+        if isinstance(value, bool):
+            errors.append(f"Field '{field}' must be numeric")
+            continue
+
         try:
-            values[field] = float(payload[field])
+            values[field] = float(value)
         except (TypeError, ValueError):
             errors.append(f"Field '{field}' must be numeric")
 
