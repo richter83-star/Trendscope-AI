@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from werkzeug.exceptions import BadRequest
 from math import tanh
 
 app = Flask(__name__)
@@ -32,11 +33,36 @@ def compute_trend_score(rank_velocity: float, price_momentum: float, review_grow
 
 @app.route("/trend-score", methods=["POST"])
 def trend_score():
-    payload = request.get_json(force=True)
-    rank_velocity = float(payload.get("rank_velocity", 0))
-    price_momentum = float(payload.get("price_momentum", 0))
-    review_growth = float(payload.get("review_growth", 0))
-    return jsonify(compute_trend_score(rank_velocity, price_momentum, review_growth))
+    try:
+        payload = request.get_json()
+    except BadRequest:
+        return jsonify({"errors": ["Invalid JSON payload"]}), 400
+
+    if not isinstance(payload, dict):
+        return jsonify({"errors": ["Request body must be a JSON object"]}), 400
+
+    errors = []
+    values = {}
+    required_fields = ["rank_velocity", "price_momentum", "review_growth"]
+
+    for field in required_fields:
+        if field not in payload:
+            errors.append(f"Missing required field '{field}'")
+            continue
+
+        try:
+            values[field] = float(payload[field])
+        except (TypeError, ValueError):
+            errors.append(f"Field '{field}' must be numeric")
+
+    if errors:
+        return jsonify({"errors": errors}), 400
+
+    return jsonify(
+        compute_trend_score(
+            values["rank_velocity"], values["price_momentum"], values["review_growth"]
+        )
+    )
 
 
 @app.route("/health")

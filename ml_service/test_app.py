@@ -29,3 +29,34 @@ def test_trend_score_endpoint_returns_json(client):
     data = response.get_json()
     assert "score" in data and "label" in data and "breakdown" in data
     assert data["breakdown"]["price_momentum"] == pytest.approx(5)
+
+
+def test_trend_score_missing_fields_returns_400(client):
+    response = client.post(
+        "/trend-score", json={"rank_velocity": -10, "review_growth": 10}
+    )
+
+    assert response.status_code == 400
+    data = response.get_json()
+    assert "Missing required field 'price_momentum'" in data["errors"]
+
+
+def test_trend_score_non_numeric_fields_return_400(client):
+    response = client.post(
+        "/trend-score",
+        json={"rank_velocity": "fast", "price_momentum": 5, "review_growth": 10},
+    )
+
+    assert response.status_code == 400
+    data = response.get_json()
+    assert "Field 'rank_velocity' must be numeric" in data["errors"]
+
+
+def test_trend_score_invalid_json_returns_400(client):
+    response = client.post(
+        "/trend-score", data="not json", content_type="application/json"
+    )
+
+    assert response.status_code == 400
+    data = response.get_json()
+    assert "Invalid JSON payload" in data["errors"]
