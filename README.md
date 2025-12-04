@@ -11,10 +11,21 @@ This repository provides a lightweight starter implementation for the AI Product
 ```bash
 cd backend
 npm install
+# Copy environment defaults
+cp .env.example .env
 npm run dev
+# Run config tests
+npm test
 ```
 
 The API exposes endpoints for health checks, mock authentication, subscription tiers, watchlist management, and product search/detail requests. Environment variables live in `.env.example`.
+
+Key configuration flags:
+
+- `PORT`: Port used by the API (default `4000`).
+- `ALLOWED_ORIGINS`: Comma-separated domains allowed by CORS. Leave blank to allow all during local development.
+- `WATCHLIST_*_LIMIT`: Watchlist caps per subscription tier.
+- `MOCK_PRODUCT_COUNT`: Number of mock products generated for demo search responses.
 
 ## ML Service (Python)
 
