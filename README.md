@@ -41,3 +41,20 @@ The Expo app renders a dashboard of trending products using the `ProductCard` an
 ## Notes
 
 This codebase is a foundation and does not yet include production integrations (Stripe, Firebase, Redis, PostgreSQL, PA-API) or full scheduling. It is meant to illustrate the architecture, key endpoints, and UI building blocks for the full feature set in `Jobsss.txt`.
+
+## Windows 10+ quick installer
+
+Run the bundled PowerShell script from an **elevated (Administrator)** terminal to install prerequisites with winget and set up each project workspace:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+./scripts/windows-installer.ps1
+```
+
+Add `-SkipMobile` if you do not want to install the React Native / Expo dependencies on the first pass. After the script finishes you can start services with the standard commands shown in the output (e.g., `cd backend && npm run dev`, `cd ml_service && .\.venv\Scripts\activate && python app.py`).
+
+If you want to validate the script from a non-Windows host or without making changes, use the dry-run mode:
+
+```powershell
+./scripts/windows-installer.ps1 -DryRun -SkipMobile
+```
