@@ -2,16 +2,17 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
-import dotenv from 'dotenv';
 import { v4 as uuid } from 'uuid';
+import { loadConfig } from './config.js';
 
-dotenv.config();
-
-const PORT = process.env.PORT || 4000;
-const TREND_LIMITS = { free: 10, starter: 50, pro: 500 };
+const { allowedOrigins, port: PORT, trendLimits: TREND_LIMITS, mockProductCount: MOCK_PRODUCT_COUNT } = loadConfig();
 
 const app = express();
-app.use(cors());
+if (allowedOrigins?.length) {
+  app.use(cors({ origin: allowedOrigins }));
+} else {
+  app.use(cors());
+}
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(helmet());
@@ -32,7 +33,7 @@ const mockProduct = (idx) => ({
   marketplace: 'amazon.com'
 });
 
-for (let i = 0; i < 40; i += 1) {
+for (let i = 0; i < MOCK_PRODUCT_COUNT; i += 1) {
   products.push(mockProduct(i));
 }
 
