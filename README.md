@@ -16,6 +16,8 @@ cp .env.example .env
 npm run dev
 # Run config tests
 npm test
+# Verify the health endpoint
+curl http://localhost:4000/health
 ```
 
 The API exposes endpoints for health checks, mock authentication, subscription tiers, watchlist management, and product search/detail requests. Environment variables live in `.env.example`.
@@ -31,9 +33,10 @@ Key configuration flags:
 
 ```bash
 cd ml_service
-python -m venv .venv
+python -m venv .venv --system-site-packages
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt  # optional if dependencies are already available on the host
+pytest
 python app.py
 ```
 
